@@ -1,0 +1,29 @@
+[package]
+name = "web"
+version = "0.1.0"
+authors = ["Tanapol Prucksakorn <tanapol.pr@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tide = "0.13.0"
+async-std = { version = "1.6.3", features = ["attributes"] }
+
+# Logging
+fern = { version = "0.6.0", features = ["colored"] }
+thiserror = "1.0.20"
+color-eyre = { version = "0.5.1", default-features = false }
+chrono = "0.4.15"
+toml = "0.5.6"
+serde_derive = "1.0.115"
+serde = "1.0.115"
+pulldown-cmark = "0.7.2"
+rayon = "1.4.0"
+
+# DB
+r2d2_sqlite = "0.16.0"
+r2d2 = "0.8.9"
+
+[dev-dependencies]
+indoc = "1.0.2"
