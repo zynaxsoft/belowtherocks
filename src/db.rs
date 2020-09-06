@@ -70,6 +70,32 @@ pub fn get_top_entries(pool: &Pool<SqliteConnectionManager>) -> Result<Vec<Entry
     Ok(result)
 }
 
+pub fn get_entries(
+    pool: &Pool<SqliteConnectionManager>,
+    offset: isize,
+    n: isize,
+) -> Result<Vec<Entry>> {
+    let conn = pool.get()?;
+    let query = "SELECT title, slug, date, content FROM blog ORDER BY date DESC LIMIT ?1 OFFSET ?2";
+    let mut stmt = conn.prepare(query)?;
+    let result: Vec<Entry> = stmt
+        .query_map(params![n, offset], |row| {
+            let fm = FrontMatter {
+                title: row.get(0)?,
+                slug: row.get(1)?,
+                date: row.get(2)?,
+            };
+            Ok(Entry {
+                fm,
+                html: row.get(3)?,
+            })
+        })?
+        .map(|r| r.unwrap())
+        .collect();
+    debug!("Got {} entries!", result.len());
+    Ok(result)
+}
+
 pub fn get_entry_cid(pool: &Pool<SqliteConnectionManager>, cid: usize) -> Result<Entry> {
     let conn = pool.get()?;
     let query = "SELECT title, slug, date, content FROM blog WHERE cid=?1";

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use web::db::{execute_sql, get_top_entries, read_and_add_entries};
+use web::db;
 use web::log::setup_logger;
 
 #[allow(unused_imports)]
@@ -15,6 +15,8 @@ use r2d2::Pool;
 use r2d2_sqlite::rusqlite::params;
 use r2d2_sqlite::SqliteConnectionManager;
 
+const ENTRIES_PER_PAGE: isize = 2;
+
 #[async_std::main]
 async fn main() -> Result<()> {
     color_eyre::install()?;
@@ -25,14 +27,14 @@ async fn main() -> Result<()> {
     let manager = SqliteConnectionManager::file("./blog.db");
     info!("Created blog.db");
     let pool = r2d2::Pool::new(manager).unwrap();
-    execute_sql(
+    db::execute_sql(
         &pool,
         "CREATE TABLE blog (cid INTEGER, title STRING, slug STRING, date STRING, content STRING)",
         params![],
     )?;
     info!("Created blog table.");
 
-    let cid_map = read_and_add_entries(&pool)?;
+    let cid_map = db::read_and_add_entries(&pool)?;
     info!("Created blog hashmap.");
 
     let state = State {
@@ -43,8 +45,10 @@ async fn main() -> Result<()> {
     let mut app = tide::with_state(state);
 
     // serve blog
-    // app.at("/")
-    //     .get(|req: Request<State>| async move { root(req.state().pool.as_ref()).await });
+    app.at("/")
+        .get(|req: Request<State>| async move { serve_page_inner(&req, 0).await });
+    app.at("/page/*page")
+        .get(|req: Request<State>| async move { serve_page(&req).await });
     app.at("/blog/*blog_slug")
         .get(|req: Request<State>| async move { serve_entry(&req).await });
     app.at("/static/*file_path")
@@ -62,13 +66,23 @@ struct State {
 
 type TideResult = std::result::Result<Response, tide::http::Error>;
 
-// async fn root(pool: &Pool<SqliteConnectionManager>) -> TideResult {
-//     let entries = get_top_entries(pool).unwrap();
-//     let entry = entries.first().unwrap();
-//     response.set_body(&entry.html[..]);
-//     response.set_content_type(mime);
-//     Ok(response)
-// }
+async fn serve_page(req: &Request<State>) -> TideResult {
+    let page: isize = req.param("page")?;
+    serve_page_inner(req, page).await
+}
+
+async fn serve_page_inner(req: &Request<State>, page: isize) -> TideResult {
+    let offset = page * ENTRIES_PER_PAGE;
+    let entries = db::get_entries(req.state().pool.as_ref(), offset, ENTRIES_PER_PAGE).unwrap();
+    let mut body = String::new();
+    for entry in entries {
+        body.push_str(&entry.fm.title);
+    }
+    let response = Response::builder(200)
+        .body(body)
+        .build();
+    Ok(response)
+}
 
 async fn serve_static(req: &Request<State>) -> TideResult {
     let path: PathBuf = req.param("file_path")?;
