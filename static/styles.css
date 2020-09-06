@@ -1,0 +1,182 @@
+/* Gruvbox theme CSS part taken from https://github.com/insanum/obsidian_gruvbox */
+:root
+{
+  --dark0-hard:     #1d2021;
+  --dark0:          #282828;
+  --dark0-soft:     #32302f;
+  --dark1:          #3c3836;
+  --dark2:          #504945;
+  --dark3:          #665c54;
+  --dark4:          #7c6f64;
+
+  --gray:           #928374;
+
+  --light0-hard:    #f9f5d7;
+  --light0:         #fbf1c7;
+  --light0-soft:    #f2e5bc;
+  --light1:         #ebdbb2;
+  --light2:         #d5c4a1;
+  --light3:         #bdae93;
+  --light4:         #a89984;
+
+  --bright-red:     #fb4934;
+  --bright-green:   #b8bb26;
+  --bright-yellow:  #fabd2f;
+  --bright-blue:    #83a598;
+  --bright-purple:  #d3869b;
+  --bright-aqua:    #8ec07c;
+  --bright-orange:  #fe8019;
+
+  --neutral-red:    #cc241d;
+  --neutral-green:  #98971a;
+  --neutral-yellow: #d79921;
+  --neutral-blue:   #458588;
+  --neutral-purple: #b16286;
+  --neutral-aqua:   #689d6a;
+  --neutral-orange: #d65d0e;
+
+  --faded-red:      #9d0006;
+  --faded-green:    #79740e;
+  --faded-yellow:   #b57614;
+  --faded-blue:     #076678;
+  --faded-purple:   #8f3f71;
+  --faded-aqua:     #427b58;
+  --faded-orange:   #af3a03;
+}
+
+.theme-dark
+{
+  --background-primary:         var(--dark0);
+  --background-primary-alt:     var(--dark0);
+  --background-secondary:       var(--dark0-hard);
+  --background-secondary-alt:   var(--dark1);
+  --text-normal:                var(--light0);
+  --text-faint:                 var(--light3);
+  --text-title-h1:              var(--light1);
+  --text-title-h2:              var(--neutral-aqua);
+  --text-title-h3:              var(--neutral-yellow);
+  --text-title-h4:              var(--neutral-green);
+  --text-title-h5:              var(--neutral-purple);
+  --text-link:                  var(--bright-blue);
+  --text-a:                     var(--bright-orange);
+  --text-a-hover:               var(--bright-blue);
+  --text-mark:                  var(--neutral-yellow);
+  --pre-code:                   var(--dark1);
+  --text-highlight-bg:          var(--faded-aqua);
+  --interactive-accent:         var(--bright-orange);
+  --interactive-before:         var(--dark4);
+  --background-modifier-border: var(--dark2);
+  --text-accent:                var(--bright-orange);
+  --interactive-accent-rgb:     var(--bright-orange);
+  --inline-code:                var(--bright-blue);
+  --code-block:                 var(--bright-blue);
+  --vim-cursor:                 var(--bright-orange);
+  --text-selection:             var(--dark3);
+}
+
+body {
+  font-family: dejavu;
+  color: var(--text-normal);
+  background-color: var(--background-primary);
+}
+
+div.container {
+  margin: auto;
+}
+
+div.entry {
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  color: var(--text-normal);
+  background-color: var(--background-primary);
+  margin: auto;
+  margin-top: 60px;
+  margin-bottom: 20px;
+  min-width: 338px;
+  max-width: 840px;
+  width: 90vw;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow: -5px -6px 8px 0 rgba(255, 255, 255, 0.02),
+              14px 18px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+div.head {
+  font-size: 30px;
+  color: var(--faded-blue);
+  padding: 10px;
+}
+
+div.head a {
+  color: var(--faded-blue);
+  text-decoration: none;
+}
+
+div.page-nav-container {
+  margin: auto;
+  text-align: center;
+}
+
+div.page-nav {
+  padding: 4em;
+  display: inline-block;
+}
+
+a:hover {
+  color: var(--text-a-hover);
+}
+
+a:link {
+  color: var(--text-a);
+}
+
+a:visited {
+  color: var(--text-a);
+}
+
+h1 {
+  font-weight: 600;
+  font-size: 34px;
+  color: var(--text-title-h1);
+}
+
+h2 {
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--text-title-h2);
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--text-title-h3);
+}
+
+h4 {
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--text-title-h4);
+}
+
+h5, h6 {
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--text-title-h5);
+}
+
+pre code {
+  font-size: 0.9em;
+  background-color: var(--pre-code);
+  padding: 4px;
+  line-height: 1.4em;
+  display: block;
+  color: var(--code-block);
+}
+
+p code {
+  color: var(--inline-code);
+  background-color: var(--pre-code);
+  padding: 1px;
+}

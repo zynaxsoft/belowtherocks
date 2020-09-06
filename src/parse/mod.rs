@@ -14,9 +14,16 @@ use tide::log::{debug, error, info, trace, warn};
 pub mod frontmatter;
 pub mod markdown;
 
+#[derive(tide::convert::Serialize)]
 pub struct Entry {
     pub fm: frontmatter::FrontMatter,
     pub html: String,
+}
+
+impl Entry {
+    pub fn get_preview(&self) -> &str {
+        self.html.lines().next().unwrap()
+    }
 }
 
 pub fn parse_file(file_path: &PathBuf) -> Result<Entry> {

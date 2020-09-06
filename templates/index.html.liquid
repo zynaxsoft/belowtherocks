@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>Belowthe.rocks</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+  </head>
+
+  <body class="theme-dark">
+
+    <div class="container">
+      <div class="head">
+        <a href=/>Belowthe.rocks</a>
+      </div>
+      {% for entry in entries %}
+        <div class="entry">
+          <a href="/blog/{{ entry.entry.fm.slug }}"><h1>{{ entry.entry.fm.title }}</h1></a>
+          {{ entry.preview }}
+        </div>
+      {% endfor %}
+
+    <div class="page-nav-container">
+    {% if page > 0 %}
+    <div class="page-nav">
+      <a href="/page/{{ page | minus: 1 }}">|previous page|</a>
+    </div>
+    {% endif %}
+    <div class="page-nav">
+    <a href="/page/{{ page | plus: 1 }}">|next page|</a>
+    </div>
+    </div>
+
+    </div>
+  </body>
+</html>

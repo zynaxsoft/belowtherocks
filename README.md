@@ -7,16 +7,17 @@ Inspired from the [blog post](https://fasterthanli.me/articles/a-new-website-for
 ## Progress
 * Simple blog with Markdown syntax.
 * Customizable slug.
-
-See blog/example.md for an example. The example entry will be served on /blog/a/b.
-
-## Next update
 * Template for
   * Homepage
   * Blog entry
 * Paging for entries.
   * Creating link for each entry.
 * CSS
+* Static file serving.
+
+See blog/example.md for an example. The example entry will be served on /blog/a/b.
+
+## Next update
 * Syntax highlighting
 
 ## Usage

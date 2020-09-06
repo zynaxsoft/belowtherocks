@@ -1,14 +1,14 @@
 use std::cmp::{Eq, PartialEq};
 use std::path::PathBuf;
 
-use serde_derive::Deserialize;
+use serde_derive::{Serialize, Deserialize};
 
 #[allow(unused_imports)]
 use color_eyre::{eyre::Report, eyre::WrapErr, Result, Section};
 #[allow(unused_imports)]
 use tide::log::{debug, error, info, trace, warn};
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct FrontMatter {
     pub title: String,
     pub slug: String,

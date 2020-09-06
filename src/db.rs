@@ -35,7 +35,10 @@ pub fn read_and_add_entries(
             ],
         )?;
         debug!("Mapping slug: {} with cid: {}", entry.fm.slug, cid);
-        cid_map.insert(entry.fm.slug, cid);
+        if cid_map.insert(entry.fm.slug, cid).is_some() {
+            let entry = parse_file(path)?;
+            panic!("Duplicated slug {} detected. Please change the slug of file {:?}", entry.fm.slug, path);
+        }
     }
     Ok(cid_map)
 }
