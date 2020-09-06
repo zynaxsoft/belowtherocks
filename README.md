@@ -17,7 +17,6 @@ See blog/example.md for an example. The example entry will be served on /blog/a/
 * Paging for entries.
   * Creating link for each entry.
 * CSS
-* Static file serving.
 * Syntax highlighting
 
 ## Usage

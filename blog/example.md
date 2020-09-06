@@ -17,4 +17,4 @@ It is so good
 
 [link](/blog/a/b)
 
-<img src="https://yoshuawuyts.com/assets/http-rs/logo-rounded.png" width=10%>
+<img src="/static/tide-logo.png" width=10%>

@@ -1,15 +1,15 @@
 use std::collections::HashMap;
-use std::str::FromStr;
+use std::path::PathBuf;
 
 use web::db::{execute_sql, get_top_entries, read_and_add_entries};
 use web::log::setup_logger;
 
 #[allow(unused_imports)]
 use color_eyre::{eyre::Report, eyre::WrapErr, Result, Section};
-use tide::http::{Mime, Response, StatusCode};
+use tide::http::{mime, StatusCode};
 #[allow(unused_imports)]
 use tide::log::{debug, error, info, trace, warn};
-use tide::Request;
+use tide::{Request, Response};
 
 use r2d2::Pool;
 use r2d2_sqlite::rusqlite::params;
@@ -43,12 +43,12 @@ async fn main() -> Result<()> {
     let mut app = tide::with_state(state);
 
     // serve blog
-    app.at("/")
-        .get(|req: Request<State>| async move { root(req.state().pool.as_ref()).await });
+    // app.at("/")
+    //     .get(|req: Request<State>| async move { root(req.state().pool.as_ref()).await });
     app.at("/blog/*blog_slug")
         .get(|req: Request<State>| async move { serve_entry(&req).await });
-    // serve static
-    // app.at("/static").get(|_| async { root().await });
+    app.at("/static/*file_path")
+        .get(|req: Request<State>| async move { serve_static(&req).await });
 
     app.listen("127.0.0.1:8080").await?;
     Ok(())
@@ -60,29 +60,56 @@ struct State {
     cid_map: HashMap<String, usize>,
 }
 
-async fn root(
-    pool: &Pool<SqliteConnectionManager>,
-) -> std::result::Result<Response, tide::http::Error> {
-    let entries = get_top_entries(pool).unwrap();
-    let entry = entries.first().unwrap();
-    let mime = Mime::from_str("text/html;charset=utf-8").unwrap();
-    let mut response = Response::new(StatusCode::Ok);
-    response.set_body(&entry.html[..]);
-    response.set_content_type(mime);
+type TideResult = std::result::Result<Response, tide::http::Error>;
+
+// async fn root(pool: &Pool<SqliteConnectionManager>) -> TideResult {
+//     let entries = get_top_entries(pool).unwrap();
+//     let entry = entries.first().unwrap();
+//     response.set_body(&entry.html[..]);
+//     response.set_content_type(mime);
+//     Ok(response)
+// }
+
+async fn serve_static(req: &Request<State>) -> TideResult {
+    let path: PathBuf = req.param("file_path")?;
+    let extension = path.extension().unwrap().to_string_lossy().to_owned();
+    let mime = match extension.as_ref() {
+        "css" => mime::CSS,
+        "jpeg" => mime::JPEG,
+        "png" => mime::PNG,
+        "svg" => mime::SVG,
+        "js" => mime::JAVASCRIPT,
+        "wasm" => mime::WASM,
+        _ => mime::BYTE_STREAM,
+    };
+    let actual_path = PathBuf::from("./static").join(path);
+    if !actual_path.is_file() {
+        info!(
+            "The requested file {:?} is not a file or doesn't exist!",
+            actual_path
+        );
+        return Err(tide::http::Error::from_str(
+            tide::StatusCode::NotFound,
+            format!("{:?} is not a file or doesn't exist.", actual_path),
+        ))
+    }
+    let body = tide::Body::from_bytes(std::fs::read(actual_path).unwrap());
+    let response = Response::builder(200).content_type(mime).body(body).build();
     Ok(response)
 }
 
-async fn serve_entry(req: &Request<State>) -> std::result::Result<Response, tide::http::Error> {
-    info!("Got entry request from {} -> {}",
+async fn serve_entry(req: &Request<State>) -> TideResult {
+    info!(
+        "Got entry request from {} -> {}",
         req.peer_addr().unwrap_or("unknown"),
         req.url().as_str(),
-        );
+    );
     let pool = req.state().pool.as_ref();
     let cid_map = &req.state().cid_map;
     let slug: String = req.param("blog_slug")?;
     if let Some(cid) = cid_map.get(&slug) {
         let entry = web::db::get_entry_cid(pool, *cid).unwrap();
-        let mime = Mime::from_str("text/html;charset=utf-8").unwrap();
+        let mime = mime::HTML;
         let mut response = Response::new(StatusCode::Ok);
         response.set_body(&entry.html[..]);
         response.set_content_type(mime);
