@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+
+  web:
+    build: .
+    image: zynaxsoft/belowtherocks:latest
+    volumes:
+    - .:/opt/
+    command: ./target/release/web

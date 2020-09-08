@@ -57,7 +57,7 @@ async fn main() -> Result<()> {
     app.at("/static/*file_path")
         .get(|req: Request<State>| async move { serve_static(&req).await });
 
-    app.listen("127.0.0.1:8080").await?;
+    app.listen("0.0.0.0:8080").await?;
     Ok(())
 }
 
