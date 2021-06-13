@@ -7,8 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tide = "0.13.0"
-async-std = { version = "1.6.3", features = ["attributes"] }
+tide = "0.16"
+async-std = { version = "1.9", features = ["attributes"] }
 
 # Logging
 fern = { version = "0.6.0", features = ["colored"] }
