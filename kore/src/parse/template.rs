@@ -15,6 +15,5 @@ pub struct PreviewFilter;
 
 impl Filter for PreviewFilter {
     fn evaluate(&self, input: &dyn ValueView, _runtime: &Runtime) -> Result<Value> {
-        
     }
 }

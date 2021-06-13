@@ -77,7 +77,7 @@ impl FrontMatter {
                         offset = idx + 1;
                         break;
                     }
-                    _ => panic!("Expected newline, got {:?}",),
+                    c => panic!("Expected newline, got {:?}", c),
                 },
             }
         }

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use web::db;
-use web::log::setup_logger;
+use kore::db;
+use kore::log::setup_logger;
 
 #[allow(unused_imports)]
 use color_eyre::{eyre::Report, eyre::WrapErr, Result, Section};
@@ -71,7 +71,7 @@ struct State {
 type TideResult = std::result::Result<Response, tide::http::Error>;
 
 async fn serve_page(req: &Request<State>) -> TideResult {
-    let page: isize = req.param("page")?;
+    let page: isize = req.param("page")?.parse::<_>()?;
     serve_page_inner(req, page).await
 }
 
@@ -86,7 +86,7 @@ async fn serve_page_inner(req: &Request<State>, page: isize) -> TideResult {
     #[derive(tide::convert::Serialize)]
     struct EntryWithPrev {
         preview: String,
-        entry: web::parse::Entry,
+        entry: kore::parse::Entry,
     }
 
     let entries: Vec<EntryWithPrev> = entries
@@ -108,7 +108,7 @@ async fn serve_page_inner(req: &Request<State>, page: isize) -> TideResult {
 }
 
 async fn serve_static(req: &Request<State>) -> TideResult {
-    let path: PathBuf = req.param("file_path")?;
+    let path: PathBuf = req.param("file_path")?.into();
     let extension = path.extension().unwrap().to_string_lossy().to_owned();
     let mime = match extension.as_ref() {
         "css" => mime::CSS,
@@ -143,9 +143,9 @@ async fn serve_entry(req: &Request<State>) -> TideResult {
     );
     let pool = req.state().pool.as_ref();
     let cid_map = &req.state().cid_map;
-    let slug: String = req.param("blog_slug")?;
-    if let Some(cid) = cid_map.get(&slug) {
-        let entry = web::db::get_entry_cid(pool, *cid).unwrap();
+    let slug = req.param("blog_slug")?;
+    if let Some(cid) = cid_map.get(slug) {
+        let entry = kore::db::get_entry_cid(pool, *cid).unwrap();
 
         let liquid = req.state().liquid_parser.as_ref();
         let template = std::fs::read_to_string("./templates/entry.html.liquid").unwrap();
